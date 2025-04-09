@@ -1,0 +1,128 @@
+C51 COMPILER V9.60.7.0   MASTER                                                            04/09/2025 23:12:17 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MASTER
+OBJECT MODULE PLACED IN .\Objects\master.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE master.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\ma
+                    -ster.lst) TABS(2) OBJECT(.\Objects\master.obj)
+
+line level    source
+
+   1          #include <AT89C5131.h>
+   2          #include "lcd.h"
+   3          #include "serial.h"
+   4          
+   5          sbit SS = P1^4;  // Slave Select
+   6          
+   7          bit transmit_completed = 0;
+   8          unsigned char temp_spi_data;
+   9          char int_ascii[3] = {0, 0, '\0'};
+  10          
+  11          void delay() {
+  12   1          int i, j;
+  13   1          for(i=0;i<300;i++) for(j=0;j<1275;j++);  // Short delay
+  14   1      }
+  15          
+  16          void spi_init(void) {
+  17   1          SPCON = 0xBE;  // Master mode, CPOL=1, CPHA=1, Fclk/16
+  18   1          IEN1 |= 0x04;  // Enable SPI interrupt
+  19   1          EA = 1;        // Enable global interrupt
+  20   1          SPCON |= 0x40; // Enable SPI
+  21   1      }
+  22          
+  23          void spi_interrupt(void) interrupt 9 {
+  24   1          if (SPSTA & 0x80) {
+  25   2              temp_spi_data = SPDAT;
+  26   2              transmit_completed = 1;
+  27   2          }
+  28   1      }
+  29          
+  30          unsigned char spi_trx(unsigned char dat) {
+  31   1          transmit_completed = 0;
+  32   1          SPDAT = dat;
+  33   1          while (!transmit_completed);  // Wait for transfer to complete
+  34   1          return temp_spi_data;
+  35   1      }
+  36          
+  37          void main() {
+  38   1          unsigned char prime11= 0,prime12 =0;
+  39   1        unsigned char prime1=0, prime2 =0;
+  40   1          unsigned char result;
+  41   1        unsigned char ch;
+  42   1        
+  43   1          lcd_init();
+  44   1          lcd_cmd(0x80);
+  45   1        
+  46   1          uart_init(); //Initialising UART
+  47   1      
+  48   1          transmit_string("Send the primes\r\n");
+  49   1          
+  50   1      ch = receive_char();
+  51   1      prime11 = ch - 48;
+  52   1      ch=receive_char();
+  53   1      prime12 = ch - 48;
+  54   1        
+C51 COMPILER V9.60.7.0   MASTER                                                            04/09/2025 23:12:17 PAGE 2   
+
+  55   1      prime1 = prime11*10 + prime12;
+  56   1      
+  57   1      lcd_write_string("Received ");
+  58   1      int_to_string(prime1, int_ascii);
+  59   1      lcd_write_string(int_ascii);
+  60   1      lcd_cmd(0xC0);
+  61   1      lcd_write_string("Send second..");
+  62   1      msdelay(50);
+  63   1      
+  64   1        
+  65   1      ch = receive_char();
+  66   1      prime11 = ch - 48;
+  67   1      ch=receive_char();
+  68   1      prime12 = ch- 48;
+  69   1        
+  70   1      prime2 = prime11*10 + prime12;
+  71   1      
+  72   1      lcd_cmd(0x10);
+  73   1      lcd_cmd(0x80);
+  74   1      lcd_write_string("Received ");
+  75   1      int_to_string(prime2, int_ascii);
+  76   1      lcd_write_string(int_ascii);
+  77   1      msdelay(1000);
+  78   1          
+  79   1          lcd_cmd(0x01);
+  80   1          lcd_cmd(0x80);
+  81   1          lcd_write_string("Sending Primes");
+  82   1          
+  83   1                spi_init();
+  84   1          SS = 0;  // Select slave
+  85   1      
+  86   1          delay();                // Short delay to ensure slave is ready
+  87   1          spi_trx(prime1);        // Send first prime
+  88   1          msdelay(10);
+  89   1          spi_trx(prime2);        // Send second prime
+  90   1          msdelay(10);
+  91   1          result = spi_trx(0x00); // Send dummy byte, receive result
+  92   1          
+  93   1          SS = 1; // Deselect slave
+  94   1      
+  95   1          lcd_cmd(0xC0);
+  96   1          if (result == 1)
+  97   1              lcd_write_string("Result: PRIME");
+  98   1          else
+  99   1              lcd_write_string("Result: NOT PRIME");
+ 100   1      
+ 101   1          while(1);
+ 102   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    600    ----
+   CONSTANT SIZE    =     89    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      4      13
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      3    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

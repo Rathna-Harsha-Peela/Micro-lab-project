@@ -1,0 +1,77 @@
+C51 COMPILER V9.60.7.0   MASTER                                                            04/07/2025 03:44:43 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MASTER
+OBJECT MODULE PLACED IN .\Objects\master.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE master.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\ma
+                    -ster.lst) TABS(2) OBJECT(.\Objects\master.obj)
+
+line level    source
+
+   1          #include <at89c5131.h>
+   2          #include "spi.h"      
+   3          #include "lcd.h"      
+   4          
+   5          void delay_ms(unsigned int ms) {
+   6   1          unsigned int i, j;
+   7   1          for(i = 0; i < ms; i++)
+   8   1              for(j = 0; j < 1275; j++);
+   9   1      }
+  10          
+  11          void main(void)
+  12          {
+  13   1          unsigned long int tx_data, rx_data;
+  14   1          unsigned char prime1, prime2, result;
+  15   1          unsigned char result_str[] = "     ";  // 5-character space for result display
+  16   1      
+  17   1          // Hardcode two prime numbers to send 
+  18   1          prime1 = 17;
+  19   1          prime2 = 19;
+  20   1      
+  21   1          // Initialize SPI (configured in master mode) and LCD.
+  22   1          spi_init();       
+  23   1          lcd_init();
+  24   1      
+  25   1          // Display a status message on the Master LCD.
+  26   1          lcd_cmd(0x80); 
+  27   1          lcd_write_string("Master: Sending");
+  28   1      
+  29   1          // Pack the two numbers into a 3-byte word.
+  30   1          // For example, use:
+  31   1          //    Byte2 (MSB): prime1, Byte1: prime2, Byte0 (LSB): 0 (dummy)
+  32   1          tx_data = ((unsigned long int)prime1 << 16) | ((unsigned long int)prime2 << 8);
+  33   1      
+  34   1          // Transmit the two numbers to the slave.
+  35   1          // (spi_trx() sends 3 bytes and returns 3 bytes – here the returned value is ignored)
+  36   1          rx_data = spi_trx(tx_data);
+  37   1          delay_ms(100);  // wait a bit for the slave to process
+  38   1      
+  39   1          // Now send dummy data so that the slave can transmit its result.
+  40   1          rx_data = spi_trx(0x000000);
+  41   1          result = (unsigned char)(rx_data & 0xFF);  // assume the result flag is returned in the LSB
+  42   1      
+  43   1          // Display the result on the Master LCD.
+  44   1          lcd_cmd(0xC0);  // move to second line
+  45   1          if(result == 1)
+  46   1            lcd_write_string("PRIME");
+  47   1          else
+  48   1            lcd_write_string("NOT PRIME");
+  49   1      
+  50   1          while(1);
+  51   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+C51 COMPILER V9.60.7.0   MASTER                                                            04/07/2025 03:44:43 PAGE 2   
+
+   CODE SIZE        =    649    ----
+   CONSTANT SIZE    =     38    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1      24
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
