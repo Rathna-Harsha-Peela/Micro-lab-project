@@ -1,0 +1,10 @@
+PUBLIC addition
+CSEG AT 100H
+
+addition: 
+MOV A, 41H
+ADD A, 42H
+MOV 43H, A
+RET
+
+END

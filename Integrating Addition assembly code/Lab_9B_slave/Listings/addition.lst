@@ -1,0 +1,35 @@
+A51 MACRO ASSEMBLER  ADDITION                                                             04/10/2025 01:56:15 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\addition.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE addition.a51 SET(SMALL) DEBUG PRINT(.\Listings\addition.lst) OBJECT(.\O
+                      bjects\addition.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     PUBLIC addition
+----                   2     CSEG AT 100H
+                       3     
+0100                   4     addition:
+0100 7401              5     MOV A, #01H
+0102 2411              6     ADD A, #11H
+0104 F8                7     MOV R0, A
+0105 22                8     RET
+                       9     
+                      10     END
+A51 MACRO ASSEMBLER  ADDITION                                                             04/10/2025 01:56:15 PAGE     2
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+ADDITION . . . . .  C ADDR   0100H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)
