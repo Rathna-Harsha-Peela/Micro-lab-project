@@ -1,0 +1,76 @@
+A51 MACRO ASSEMBLER  ADD                                                                  04/11/2025 02:57:55 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\add.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE add.a51 SET(SMALL) DEBUG PRINT(.\Listings\add.lst) OBJECT(.\Objects\add
+                      .obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     PUBLIC MAC
+----                   2     CSEG AT 100H
+                       3     
+0100                   4     MAC:
+                       5     
+0100 7E00              6     MOV R6,#00H
+0102 E570              7     MOV  A,70H
+0104 8573F0            8     MOV  B,73H
+0107 A4                9     MUL AB
+0108 F8               10     MOV R0,A
+0109 ABF0             11     MOV R3,B
+                      12     
+010B E571             13     MOV  A,71H
+010D 8574F0           14     MOV  B,74H
+0110 A4               15     MUL AB
+0111 F9               16     MOV R1,A
+0112 ACF0             17     MOV R4,B
+                      18     
+0114 E572             19     MOV  A,72H
+0116 8575F0           20     MOV  B,75H
+0119 A4               21     MUL AB
+011A F56E             22     MOV 6EH,A
+011C 85F06F           23     MOV 6FH,B
+011F 312E             24     CALL ADD16
+0121 A96E             25     MOV R1,6EH
+0123 AC6F             26     MOV R4,6FH
+0125 312E             27     CALL ADD16
+0127 8852             28     MOV 52H, R0
+0129 8B51             29     MOV 51H, R3
+012B 8E50             30     MOV 50H, R6
+012D 22               31     RET
+                      32     
+012E                  33     ADD16:
+                      34     
+                      35     
+012E E8               36     MOV A, R0
+012F 29               37     ADD A, R1
+0130 F8               38     MOV R0, A
+                      39     
+0131 EB               40     MOV A, R3
+0132 3C               41     ADDC A,R4
+0133 FB               42     MOV R3, A
+                      43     
+0134 7400             44     MOV A, #00H
+0136 3E               45     ADDC A, R6
+0137 FE               46     MOV R6, A
+                      47     
+0138 22               48     RET
+                      49     END
+A51 MACRO ASSEMBLER  ADD                                                                  04/11/2025 02:57:55 PAGE     2
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+ADD16. . . . . . .  C ADDR   012EH   A   
+B. . . . . . . . .  D ADDR   00F0H   A   
+MAC. . . . . . . .  C ADDR   0100H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)
